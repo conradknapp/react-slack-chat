@@ -1,5 +1,6 @@
 import React from "react";
 import firebase from "../index";
+import md5 from "md5";
 //prettier-ignore
 import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
 import { Link } from "react-router-dom";
@@ -10,22 +11,21 @@ class Login extends React.Component {
     email: "",
     password: "",
     passwordConfirmation: "",
-    errors: []
+    errors: [],
+    usersRef: firebase.database().ref("users")
   };
 
   isFormValid = () => {
     let errors = [];
 
     if (this.isFormEmpty()) {
-      errors = [
-        ...errors,
-        { message: "Fill in all fields", type: "formEmpty" }
-      ];
+      // prettier-ignore
+      errors = [...this.state.errors, { message: "Fill in all fields", type: "formEmpty" }];
       this.setState({ errors });
       return false;
     } else if (!this.isPasswordValid()) {
       // prettier-ignore
-      errors = [...errors, { message: "Password is invalid", type: "passwordInvalid" }];
+      errors = [...this.state.errors, { message: "Password is invalid", type: "passwordInvalid" }];
       this.setState({ errors });
       return false;
     } else {
@@ -67,14 +67,44 @@ class Login extends React.Component {
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(user => {
           console.log("user registered", user.user.email);
+          user.user
+            .updateProfile({
+              displayName: this.state.username,
+              photoURL: `http://gravatar.com/avatar/${md5(
+                user.user.email
+              )}?d=identicon`
+            })
+            .then(
+              () => {
+                this.saveUser(user).then(() => {
+                  console.log(user.user);
+                  this.props.history.push("/");
+                });
+              },
+              err => {
+                console.error(err);
+                this.setState({
+                  errors: this.state.errors.concat([
+                    { message: err.message, type: err.name }
+                  ])
+                });
+              }
+            );
         })
         .catch(err => {
           console.error(err);
-          let errors = [];
           // prettier-ignore
-          this.setState({ errors: errors.concat([{ message: err.message, type: err.name }]) });
+          this.setState({ errors: this.state.errors.concat([{ message: err.message, type: err.name }]) });
         });
     }
+  };
+
+  saveUser = user => {
+    console.log(user.user);
+    return this.state.usersRef.child(user.user.uid).set({
+      name: user.user.displayName,
+      avatar: user.user.photoURL
+    });
   };
 
   handleChange = event => {

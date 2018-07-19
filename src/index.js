@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import firebase from "firebase/app";
 import "firebase/auth";
+import 'firebase/database';
 
 let config = {
   apiKey: "AIzaSyD4S9Zy7fVxMZx-R9UT0_rvikQi-ogF0NA",

@@ -22,3 +22,9 @@
 
 - Also show that firebase returns to us validations errors; add those errors to the error object
 - When you add messages to the error object, show the benefit of using push over concat (since concat returns the entire array whereas push will just return its new length)
+- Add user.updateProfile and add displayName and profileImg as props, use md5 to create gravatar img
+- Add saveUser to Login component and add usersRef to state object, then add saveUser function to another then statement after updateProfile
+- In the saveUser function, make a child for the usersRef prop on the state object and set the two properties that we created with updateProfile (displayName and photoURL)
+- After saving the User with saveUser, redirect to the home page; take a look at the user saved in the database
+
+- Move onto Redux setup!
