@@ -4,6 +4,8 @@ import md5 from "md5";
 //prettier-ignore
 import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { setUser } from "../actions";
 
 class Login extends React.Component {
   state = {
@@ -12,7 +14,8 @@ class Login extends React.Component {
     password: "",
     passwordConfirmation: "",
     errors: [],
-    usersRef: firebase.database().ref("users")
+    usersRef: firebase.database().ref("users"),
+    loading: false
   };
 
   isFormValid = () => {
@@ -20,12 +23,12 @@ class Login extends React.Component {
 
     if (this.isFormEmpty()) {
       // prettier-ignore
-      errors = [...this.state.errors, { message: "Fill in all fields", type: "formEmpty" }];
+      errors = [{ message: "Fill in all fields", type: "formEmpty" }];
       this.setState({ errors });
       return false;
     } else if (!this.isPasswordValid()) {
       // prettier-ignore
-      errors = [...this.state.errors, { message: "Password is invalid", type: "passwordInvalid" }];
+      errors = [{ message: "Password is invalid", type: "passwordInvalid" }];
       this.setState({ errors });
       return false;
     } else {
@@ -61,32 +64,33 @@ class Login extends React.Component {
 
     event.preventDefault();
     if (this.isFormValid()) {
-      this.setState({ errors: [] });
+      this.setState({ errors: [], loading: true });
       firebase
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
-        .then(user => {
-          console.log("user registered", user.user.email);
-          user.user
+        .then(createdUser => {
+          console.log("user registered", createdUser.user.email);
+          createdUser.user
             .updateProfile({
               displayName: this.state.username,
               photoURL: `http://gravatar.com/avatar/${md5(
-                user.user.email
+                createdUser.user.email
               )}?d=identicon`
             })
             .then(
               () => {
-                this.saveUser(user).then(() => {
-                  console.log(user.user);
+                this.saveUser(createdUser).then(() => {
+                  console.log(createdUser.user);
+                  this.props.setUser(createdUser.user);
                   this.props.history.push("/");
                 });
               },
               err => {
                 console.error(err);
+                // prettier-ignore
                 this.setState({
-                  errors: this.state.errors.concat([
-                    { message: err.message, type: err.name }
-                  ])
+                  errors: this.state.errors.concat([{ message: err.message, type: err.name }]),
+                  loading: false
                 });
               }
             );
@@ -94,16 +98,19 @@ class Login extends React.Component {
         .catch(err => {
           console.error(err);
           // prettier-ignore
-          this.setState({ errors: this.state.errors.concat([{ message: err.message, type: err.name }]) });
+          this.setState({
+            errors: this.state.errors.concat([{ message: err.message, type: err.name }]),
+            loading: false
+          });
         });
     }
   };
 
-  saveUser = user => {
-    console.log(user.user);
-    return this.state.usersRef.child(user.user.uid).set({
-      name: user.user.displayName,
-      avatar: user.user.photoURL
+  saveUser = createdUser => {
+    console.log(createdUser.user);
+    return this.state.usersRef.child(createdUser.user.uid).set({
+      name: createdUser.user.displayName,
+      avatar: createdUser.user.photoURL
     });
   };
 
@@ -123,7 +130,8 @@ class Login extends React.Component {
       email,
       password,
       passwordConfirmation,
-      errors
+      errors,
+      loading
     } = this.state;
 
     return (
@@ -195,7 +203,12 @@ class Login extends React.Component {
                   }
                   autoComplete="new-password"
                 />
-                <Button color="orange" fluid size="large">
+                <Button
+                  color="orange"
+                  fluid
+                  size="large"
+                  className={loading ? "loading" : null}
+                >
                   Login
                 </Button>
               </Segment>
@@ -211,4 +224,7 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default connect(
+  null,
+  { setUser }
+)(Login);

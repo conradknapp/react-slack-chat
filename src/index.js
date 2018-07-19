@@ -1,14 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Route } from "react-router-dom";
-import "semantic-ui-css/semantic.min.css";
+import { createStore, applyMiddleware } from "redux";
+import { Provider } from "react-redux";
+import ReduxPromise from "redux-promise";
+import { composeWithDevTools } from "redux-devtools-extension";
 
 import App from "./App";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/auth";
-import 'firebase/database';
+import "firebase/database";
+import "semantic-ui-css/semantic.min.css";
+
+import root_reducer from "./reducers";
 
 let config = {
   apiKey: "AIzaSyD4S9Zy7fVxMZx-R9UT0_rvikQi-ogF0NA",
@@ -21,6 +27,11 @@ let config = {
 firebase.initializeApp(config);
 export default firebase;
 
+const store = createStore(
+  root_reducer,
+  composeWithDevTools(applyMiddleware(ReduxPromise))
+);
+
 const Root = () => (
   <Router>
     <React.Fragment>
@@ -31,8 +42,9 @@ const Root = () => (
   </Router>
 );
 
-ReactDOM.render(<Root />, document.getElementById("root"));
-
-if (module.hot) {
-  module.hot.accept();
-}
+ReactDOM.render(
+  <Provider store={store}>
+    <Root />
+  </Provider>,
+  document.getElementById("root")
+);

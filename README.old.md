@@ -1,5 +1,5 @@
-- Install dependencies (mention issues with Node 10)
-- Init project - npx create-react-app
+- Install dependencies (mention issues with Node 10; install React / Redux Dev tools which is why they should dl either Chrome/Firefox)
+- Init project - npx create-react-app (or dl repo with all dependencies)
 - Clean up - remove logo, sw, markup, add component folder
 - Install react-router-dom / firebase
 - Set up routes (Register, Login, App/Chat)
@@ -28,3 +28,14 @@
 - After saving the User with saveUser, redirect to the home page; take a look at the user saved in the database
 
 - Move onto Redux setup!
+- Create the action for the store (actions folder, index.js and types.js) go through how it's just a function that updates the state object
+- How does it update this object? Let's create it in the reducers folder (index.js and user_reducer.js); give it an initial state and switch statement
+- Then show how we will have multiple reducers and combine them in (reducers/index.js)
+- How do we provide access to this store to all components? Create store in index.js and wrapping our entire app with it using the Provider component
+- Create the store in this fashion: const store = createStore(
+  root_reducer,
+  composeWithDevTools(applyMiddleware(ReduxPromise))
+  );[https://stackoverflow.com/questions/36377911/reactredux-uncaught-error-expected-the-reducer-to-be-a-function]
+- Install Redux Dev Tools from Chrome Extensions (if wasn't mentioned in intro), and use redux-devtools-extension to wrap applyMiddleware (mention the /productionOnly setting when deploying, also see Osmani's tweet)
+- Bring the action into the Login component with the combine function, set mapStateToProps to null and just destructure setUser from mapStateToDispatch
+- Login a user and see how the state is updated in Redux dev tools
