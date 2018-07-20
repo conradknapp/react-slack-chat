@@ -29,7 +29,7 @@
 
 - Move onto Redux setup!
 - Create the action for the store (actions folder, index.js and types.js) go through how it's just a function that updates the state object
-- How does it update this object? Let's create it in the reducers folder (index.js and user_reducer.js); give it an initial state and switch statement
+- How does it update this object? Let's create it in the reducers folder (index.js and user_reducer.js); give it an initial state (containing a 'currentUser' prop and 'isAuthenticated' prop) and switch statement
 - Then show how we will have multiple reducers and combine them in (reducers/index.js)
 - How do we provide access to this store to all components? Create store in index.js and wrapping our entire app with it using the Provider component
 - Create the store in this fashion: const store = createStore(
@@ -48,3 +48,6 @@
 - Add loginUser function, add isFormValid function, remove console logs from Register component and add them to loginUser function
 - Use firebase.auth().signIn..., add connect from 'react-redux' and setUser from actions, call setUser within signInUser and redirect to home
 - Show password error on login from firebase and change the className of the password input to include el.includes('password')
+
+- Create a private route definition and use mapStateToProps to now GET a value from Redux; we want to map the state to props so we can use the isAuthenticated value (when user authenticates) to conditionally show the user the chat (if auth) or to redirect him to the login page if not
+- Create map state to props in the index.js file and pass through the Root component (and declare Root with let so we can use 'connect' func to mapStateToProps)

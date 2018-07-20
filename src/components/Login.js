@@ -22,7 +22,7 @@ class Login extends React.Component {
         .auth()
         .signInWithEmailAndPassword(this.state.email, this.state.password)
         .then(signedInUser => {
-          this.props.setUser(signedInUser);
+          this.props.setUser(signedInUser.user);
           this.props.history.push("/");
         })
         .catch(err => {
