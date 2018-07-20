@@ -9,10 +9,11 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_USER:
       return {
-        ...state,
         currentUser: action.payload.currentUser,
         isAuthenticated: action.payload.isAuthenticated
       };
+    case actionTypes.LOGOUT_USER:
+      return { ...initialState };
     default:
       return state;
   }

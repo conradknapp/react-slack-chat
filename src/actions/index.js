@@ -9,3 +9,13 @@ export const setUser = user => {
     }
   };
 };
+
+export const logoutUser = () => {
+  return {
+    type: actionTypes.LOGOUT_USER,
+    payload: {
+      currentUser: null,
+      isAuthenticated: false
+    }
+  };
+};
