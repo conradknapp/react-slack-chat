@@ -14,6 +14,10 @@ class Login extends React.Component {
     loading: false
   };
 
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged(user => console.log(user));
+  }
+
   loginUser = () => {
     console.log("login");
     if (this.isFormValid()) {

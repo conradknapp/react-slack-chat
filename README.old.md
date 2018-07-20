@@ -119,3 +119,28 @@ Add App/Chat Component Markup
 - Create a new action 'logoutUser', set return user to their initialState values [show that you can add another case to the 'setUser' statement in the user_reducer or that you can just spread the initial state object to state.user]
   -add 'logoutUser' within mapStateToDispatch parameters and import it, call it after logging out with firebase, then redirect back to the login page
 - Since we don't have access to the history object (unless we pass it down from the App component via props), we we'll use withRouter to redirect after logging our user out
+
+Channels Component
+
+---
+
+- Create 'Channels' component, add basic markup, and import into Sidebar component (under 'CurrentUser'), take a look at it in browser
+- Add better markup for 'Channels', add styles if necessary
+- Add state, add 'channels', 'new_channel', and 'errors' to state; add handleChange function to update state when typed into input
+- Add a couple functions to open / close the modal (i.e. handleOpen / handleCloseModal )
+- Add an 'addChannel' function to add a new property 'channels' to the database, and when it adds a channel, it will have it's own random id, which contains a name for the channel and an id
+- Bring in firebase, add prop to state--channelsRef
+- Set up logic in 'addChannel', add displayErrors for error handling if it can't be added
+- Destructure state properties in render used in return
+- Will be not allowed to add new channels at first (should see error message); we need to add more permission to our firebase rules, publish them and try to add a channel again
+- add 'addListeners' function which be a listener for when a new child is added to the 'channels' ref to Firebase; also add 'detachListeners' and hook both of them up to componentDidMount and componentWillUnmount respectively
+- Delete li (containing an example channel) and create display Channels function, which will loop through the channels prop on state and output list
+
+Change Current Channel of User
+
+---
+
+- Create new action setCurrentChannel to run within 'addListeners'; add currentChannel property to initial state object and modify other cases, add setCurrentChannel action and add reducer case for it, pass in this.state.channels[0] to when you call the function (it is called according to the value of this.state.firstLoad)
+- Create 'setActiveChannel' function, which will compare the current channel passed in to the channel in the user's state (and return either true or false); so to get that we need to mapStateToProps
+- Call 'setActiveChannel' within displayErrors where you loop over each of the items in the 'channels' property
+- Add onClick to each of the lis and add a function 'changeChannel' in which you call 'setCurrentChannel'

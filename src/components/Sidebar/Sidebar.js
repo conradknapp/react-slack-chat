@@ -2,6 +2,7 @@ import React from "react";
 import { Header } from "semantic-ui-react";
 
 import CurrentUser from "./CurrentUser";
+import Channels from "./Channels";
 
 class Sidebar extends React.Component {
   render() {
@@ -11,6 +12,7 @@ class Sidebar extends React.Component {
           Slack Clone
         </Header>
         <CurrentUser />
+        <Channels />
       </div>
     );
   }

@@ -35,3 +35,48 @@ body > div > div > div.login-form {
   height: 90px;
   padding: 8px;
 }
+
+.channels__list {
+  min-height: 100px;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+.channels__container ul {
+  margin: 0;
+  padding: 0px;
+}
+
+.channels__item {
+  height: 30px;
+  margin: 8px;
+  list-style: none;
+  background-color: #ca67ff;
+  cursor: pointer;
+  line-height: 30px;
+  border-radius: 2px;
+  padding-left: 12px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.channel__count {
+  float: right;
+}
+
+.is_active {
+  background-color: #9740c5;
+}
+
+.channels__item:hover {
+  background-color: #9740c5;
+}
+
+.add_channel {
+  cursor: pointer;
+  color: #8bc34a;
+}
+
+.add_chanel:hpver {
+  color: #689f38;
+}
