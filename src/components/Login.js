@@ -1,117 +1,48 @@
 import React from "react";
 import firebase from "../index";
-import md5 from "md5";
 //prettier-ignore
-import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { setUser } from "../actions";
 
 class Login extends React.Component {
   state = {
-    username: "",
     email: "",
     password: "",
-    passwordConfirmation: "",
     errors: [],
-    usersRef: firebase.database().ref("users"),
     loading: false
   };
 
-  isFormValid = () => {
-    let errors = [];
-
-    if (this.isFormEmpty()) {
-      // prettier-ignore
-      errors = [{ message: "Fill in all fields", type: "formEmpty" }];
-      this.setState({ errors });
-      return false;
-    } else if (!this.isPasswordValid()) {
-      // prettier-ignore
-      errors = [{ message: "Password is invalid", type: "passwordInvalid" }];
-      this.setState({ errors });
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  isFormEmpty = () => {
-    const { username, email, password, passwordConfirmation } = this.state;
-
-    // prettier-ignore
-    if (!username.length || !email.length || !password.length || !passwordConfirmation.length) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  isPasswordValid = () => {
-    const { password, passwordConfirmation } = this.state;
-
-    if (password.length < 6 || passwordConfirmation.length < 6) {
-      return false;
-    } else if (password !== passwordConfirmation) {
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  registerUser = event => {
-    console.log("registering...");
-
-    event.preventDefault();
+  loginUser = () => {
+    console.log("login");
     if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
       firebase
         .auth()
-        .createUserWithEmailAndPassword(this.state.email, this.state.password)
-        .then(createdUser => {
-          console.log("user registered", createdUser.user.email);
-          createdUser.user
-            .updateProfile({
-              displayName: this.state.username,
-              photoURL: `http://gravatar.com/avatar/${md5(
-                createdUser.user.email
-              )}?d=identicon`
-            })
-            .then(
-              () => {
-                this.saveUser(createdUser).then(() => {
-                  console.log(createdUser.user);
-                  this.props.setUser(createdUser.user);
-                  this.props.history.push("/");
-                });
-              },
-              err => {
-                console.error(err);
-                // prettier-ignore
-                this.setState({
-                  errors: this.state.errors.concat([{ message: err.message, type: err.name }]),
-                  loading: false
-                });
-              }
-            );
+        .signInWithEmailAndPassword(this.state.email, this.state.password)
+        .then(signedInUser => {
+          this.props.setUser(signedInUser);
+          this.props.history.push("/");
         })
         .catch(err => {
           console.error(err);
-          // prettier-ignore
           this.setState({
-            errors: this.state.errors.concat([{ message: err.message, type: err.name }]),
+            errors: this.state.errors.concat([
+              { message: err.message, type: err.name }
+            ]),
             loading: false
           });
         });
     }
   };
 
-  saveUser = createdUser => {
-    console.log(createdUser.user);
-    return this.state.usersRef.child(createdUser.user.uid).set({
-      name: createdUser.user.displayName,
-      avatar: createdUser.user.photoURL
-    });
+  isFormValid = () => {
+    if (this.state.email && this.state.password) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   handleChange = event => {
@@ -120,19 +51,10 @@ class Login extends React.Component {
   };
 
   displayErrors = () =>
-    this.state.errors.map((error, i) => (
-      <Message key={i} error header="Error" content={error.message} />
-    ));
+    this.state.errors.map((error, i) => <p key={i}>{error.message}</p>);
 
   render() {
-    const {
-      username,
-      email,
-      password,
-      passwordConfirmation,
-      errors,
-      loading
-    } = this.state;
+    const { email, password, errors, loading } = this.state;
 
     return (
       <div className="login-form">
@@ -143,19 +65,10 @@ class Login extends React.Component {
         >
           <Grid.Column style={{ maxWidth: 450 }}>
             <Header as="h2" color="orange" textAlign="center">
-              Slack Clone
+              Login
             </Header>
-            <Form size="large" onSubmit={this.registerUser} className="error">
+            <Form size="large" onSubmit={this.loginUser} className="error">
               <Segment stacked>
-                <Form.Input
-                  fluid
-                  name="username"
-                  icon="user"
-                  iconPosition="left"
-                  placeholder="Username"
-                  onChange={this.handleChange}
-                  value={username}
-                />
                 <Form.Input
                   fluid
                   name="email"
@@ -170,6 +83,7 @@ class Login extends React.Component {
                       : null
                   }
                   autoComplete="email"
+                  required={true}
                 />
                 <Form.Input
                   fluid
@@ -181,27 +95,12 @@ class Login extends React.Component {
                   onChange={this.handleChange}
                   value={password}
                   className={
-                    errors.some(el => el.type === "passwordInvalid")
+                    errors.some(el => el.message.includes("password"))
                       ? "error"
                       : null
                   }
-                  autoComplete="new-password"
-                />
-                <Form.Input
-                  fluid
-                  icon="lock"
-                  iconPosition="left"
-                  placeholder="Password Confirmation"
-                  type="password"
-                  name="passwordConfirmation"
-                  onChange={this.handleChange}
-                  value={passwordConfirmation}
-                  className={
-                    errors.some(el => el.type === "passwordInvalid")
-                      ? "error"
-                      : null
-                  }
-                  autoComplete="new-password"
+                  autoComplete="password"
+                  required={true}
                 />
                 <Button
                   color="orange"
@@ -209,13 +108,18 @@ class Login extends React.Component {
                   size="large"
                   className={loading ? "loading" : null}
                 >
-                  Login
+                  Submit
                 </Button>
               </Segment>
             </Form>
-            {!!errors.length && this.displayErrors()}
+            {!!errors.length && (
+              <Message error>
+                <h3>Error</h3>
+                {this.displayErrors()}
+              </Message>
+            )}
             <Message>
-              Already a user? <Link to="/register">Register</Link>
+              Don't have an account? <Link to="/register">Register</Link>
             </Message>
           </Grid.Column>
         </Grid>
