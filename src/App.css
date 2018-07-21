@@ -80,3 +80,42 @@ body > div > div > div.login-form {
 .add_chanel:hpver {
   color: #689f38;
 }
+
+.messages__container {
+  position: relative;
+  background-color: #2a2a2e;
+  padding: 10px 30px 210px 30px;
+  margin-left: 300px;
+  min-height: 100%;
+}
+
+.messages__container .comments {
+  font-size: 1.2rem;
+}
+
+#app {
+  height: 100vh;
+}
+
+.messages__form {
+  position: fixed;
+  bottom: 0;
+  background-color: #232323;
+  padding: 10px;
+  padding-top: 20px;
+  height: 210px;
+  left: 300px;
+  right: 0;
+}
+
+.messages__form.big {
+  height: 350px;
+}
+
+.shortcut {
+  color: white;
+}
+
+p {
+  color: black;
+}

@@ -144,3 +144,36 @@ Change Current Channel of User
 - Create 'setActiveChannel' function, which will compare the current channel passed in to the channel in the user's state (and return either true or false); so to get that we need to mapStateToProps
 - Call 'setActiveChannel' within displayErrors where you loop over each of the items in the 'channels' property
 - Add onClick to each of the lis and add a function 'changeChannel' in which you call 'setCurrentChannel'
+
+Add Messages
+
+---
+
+- Add Messages folder and move 'Messages' component into it
+- Add markup for 'Messages' component and add styles
+- Create 'MessageForm' component, add markup and styles to it, and put it within the 'Messages' component; add 'sendMessage' function to 'MessageForm'
+- Show that we are going to add a new 'messages' child to our Firebase db, which will contain 'content', 'timestamp' and a reference to the user containing their id, name and avatar
+- Go to 'Messages' and add 'messagesRef' property, pass messagesRef down to MessageForm as a prop (maybe log it with componentDidMount) to 'sendMessage'
+- Use mapStateToProps to get the currentChannel / currentUser within MessageForm, add them to sendMessage function, create newMessage as described above, add as child to 'messages' child, create error property on state obj
+- Once again you'll get permission errors when you try to send a message, so you'll set more rule in Firebase
+- After adding the rules for 'messages', try sending a message again and look at the database
+- Check within sendMessage whether it is the current channel
+- Move where you create a newMessage into its own function 'createMessage' and call the function within 'sendMessage'
+- Add componentDidMount/WillUnMount with addListeners and detachListeners again, listen for child_added again, add values to messages in state obj
+- Open up 'ui messages' div and create displayMessages function to show all messages
+- MapStateToProps in Messages to get 'currentChannel'
+- Add 'channel' property to state, set value of this.props.currentChannel to channel in local state, detach listeners if 'channel' !== null (the original value)
+- Needed to take out some of the rules in firebase:
+
+          ".validate": "newData.hasChildren(['content', 'timestamp', 'user'])",
+          "content": {
+            ".validate": "newData.val().length > 0"
+          },
+          "user": {
+            ".validate": "newData.hasChildren(['name', 'avatar', 'id'])",
+            "id": {
+              ".validate": "newData.val() === auth.uid"
+            }
+          }
+
+- Note! Added it back in after I realized i was clearing the message value for the MessageForm, but wasn't clearing the actual value in the textarea. This caused Firebase to rejected any message that wasn't cleared out manually and typed in again. So i added a ref to the textarea and cleared it out in the .then() part of sending the message

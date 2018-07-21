@@ -26,7 +26,9 @@ class Channels extends React.Component {
   addListeners = () => {
     this.state.channelsRef.on("child_added", snap => {
       this.setState({
-        channels: this.state.channels.concat([snap.val().name])
+        channels: this.state.channels.concat([
+          { id: snap.val().id, name: snap.val().name }
+        ])
       });
 
       if (this.state.firstLoad && this.state.channels.length > 0) {
@@ -61,7 +63,11 @@ class Channels extends React.Component {
       });
   };
 
-  setActiveChannel = channel => channel === this.props.currentChannel;
+  setActiveChannel = channel => {
+    if (this.props.currentChannel) {
+      return channel.id === this.props.currentChannel.id;
+    }
+  };
 
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
@@ -86,7 +92,7 @@ class Channels extends React.Component {
           this.setActiveChannel(channel) ? "is_active" : ""
         }`}
       >
-        {channel}
+        {channel.name}
       </li>
     ));
 
