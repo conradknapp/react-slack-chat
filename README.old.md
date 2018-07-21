@@ -177,3 +177,12 @@ Add Messages
           }
 
 - Note! Added it back in after I realized i was clearing the message value for the MessageForm, but wasn't clearing the actual value in the textarea. This caused Firebase to rejected any message that wasn't cleared out manually and typed in again. So i added a ref to the textarea and cleared it out in the .then() part of sending the message
+
+Message Component
+
+---
+
+- Change the p tag that you are using to insert the individual message into an individual 'Message' component, give it styles, pass in the entire message as a prop
+- Add isOwnMessage function to add class to messages that are equal to the currentUser's uid
+- DL moment and create fromNow function to convert timestamp to time from present
+- Add transition for each of the Messages using react-transition-group

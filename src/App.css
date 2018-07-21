@@ -119,3 +119,38 @@ body > div > div > div.login-form {
 p {
   color: black;
 }
+
+.comment__container pre {
+  font-size: 0.9rem;
+  background: #232323;
+  box-shadow: 3px 6px 9px 0px #a2a2a2;
+}
+
+.comment__self {
+  border-left: 2px solid orange;
+  padding-left: 8px;
+}
+
+.comment__image {
+  min-height: 100px;
+  margin-top: 16px;
+}
+
+.comment__date {
+  color: #767676;
+}
+
+.fade-enter {
+  opacity: 0.01;
+}
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0.01;
+  transition: opacity 500ms ease-in;
+}

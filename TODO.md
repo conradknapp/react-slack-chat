@@ -1,0 +1,10 @@
+- Show that you can write using different alphabets
+- Slice the length of the name of channels
+- Make it so users can change their avatar
+- When a new channel is created make some default text (when there are no messages)
+- Maybe change componentWillReceiveProps in Messages component with static getDerivedStateFromProps
+- Figure out how to not kick logged in users to the home page on page reload
+- Maybe figure out how to do hot reloading with Redux
+- Remove Redux Promise (and maybe applyMiddleware)
+- Look for an improved transition in Messages component
+- Maybe use spinners when loading the Channels and Messages

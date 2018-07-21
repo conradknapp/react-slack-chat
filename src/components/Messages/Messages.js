@@ -2,6 +2,8 @@ import React from "react";
 import firebase from "../../index";
 import MessageForm from "./MessageForm";
 import { connect } from "react-redux";
+import Message from "./Message";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 class Messages extends React.Component {
   state = {
@@ -23,10 +25,8 @@ class Messages extends React.Component {
   // }
 
   addListeners = channelId => {
-    console.log("fired");
     this.state.messagesRef.child(channelId).on("child_added", snap => {
-      let newMessages = [...this.state.messages, snap.val()];
-      console.log(newMessages);
+      let newMessages = [snap.val(), ...this.state.messages];
       this.setState({ messages: newMessages });
     });
   };
@@ -38,9 +38,19 @@ class Messages extends React.Component {
   };
 
   displayMessages = () => {
-    return this.state.messages.map(message => (
-      <p key={message.timestamp}>{message.content}</p>
-    ));
+    return (
+      <TransitionGroup>
+        {this.state.messages.map(message => (
+          <CSSTransition
+            key={message.timestamp}
+            timeout={500}
+            classNames="fade"
+          >
+            <Message key={message.timestamp} message={message} />
+          </CSSTransition>
+        ))}
+      </TransitionGroup>
+    );
   };
 
   render() {
