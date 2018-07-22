@@ -6,3 +6,5 @@ https://stackoverflow.com/questions/44069816/react-redux-wait-for-store-to-updat
 https://stackoverflow.com/questions/51312765/react-redux-firebase-onauthstatechanged-delay-prevents-from-using-life-cycle-m
 https://react.semantic-ui.com/modules/modal#types-controlled
 https://firebase.google.com/docs/auth/web/manage-users
+https://hackernoon.com/replacing-componentwillreceiveprops-with-getderivedstatefromprops-c3956f7ce607
+https://stackoverflow.com/questions/45222724/find-and-replace-value-inside-an-array-of-objects-javascript?noredirect=1

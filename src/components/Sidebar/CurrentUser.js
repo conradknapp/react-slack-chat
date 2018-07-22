@@ -6,8 +6,12 @@ import { withRouter } from "react-router-dom";
 import { logoutUser } from "../../actions";
 
 class CurrentUser extends React.Component {
+  state = {
+    presenceRef: firebase.database().ref("presence")
+  };
+
   logoutUser = () => {
-    console.log("logging out...");
+    this.state.presenceRef.child(this.props.currentUser.uid).remove();
     firebase
       .auth()
       .signOut()

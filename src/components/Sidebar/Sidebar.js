@@ -3,6 +3,7 @@ import { Header } from "semantic-ui-react";
 
 import CurrentUser from "./CurrentUser";
 import Channels from "./Channels";
+import Users from './Users';
 
 class Sidebar extends React.Component {
   render() {
@@ -13,6 +14,8 @@ class Sidebar extends React.Component {
         </Header>
         <CurrentUser />
         <Channels />
+        <div className="ui divider"></div>
+        <Users />
       </div>
     );
   }

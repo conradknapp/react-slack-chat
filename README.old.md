@@ -186,3 +186,27 @@ Message Component
 - Add isOwnMessage function to add class to messages that are equal to the currentUser's uid
 - DL moment and create fromNow function to convert timestamp to time from present
 - Add transition for each of the Messages using react-transition-group
+
+Users component
+
+---
+
+- Add users components to Sidebar folder
+- Have it hold an array of users in state, import Users into Sidebar component
+- Add styles for Users component, add corresponding markup
+- Use mapStateToProps to get value of currentUser
+- Again make addListeners and detachListeners functions (associated with mounting/unmounting)
+- Bring in firebase and make a 'usersRef' state property
+- Within addListeners, listen for when a child is added, then create a user object and add it to the users array in state
+- Change the firebase rules so you can use the 'users' ref
+- Check your local state so you can see that someone else who has used the chat has now been added to the array as an offline user
+- Iterate over the users in the array (directly within the markup)
+- Add a 'connectedRef' property and a 'presenceRef' property within state
+- Add another conditional for present users in the chat within addListeners
+- Add addStatusToUser function to conditionally add a status property with the value of 'online' or 'offline' depending on whether we are listening for child_added or child_removed
+- Now we need to add rules for this 'presence' ref
+- Use connectedRef in addListeners which will add a presence ref, add a user id to that and set it equal to true (initially)
+- Use reduce to update whether a user is online or offline
+- Create a function called 'isOnline' to dynamically show whether a user is online or not
+- Go to 'CurrentUser' component and add a 'presenceRef' to the state object, within logout, use it to remove the 'presence' ref in the db for a given user, and the light should change from green to red (when loggedout)
+- Add detachListeners function where you remove all of the refs in the state object upon unmounting the component

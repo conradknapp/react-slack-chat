@@ -19,7 +19,6 @@ class Login extends React.Component {
   }
 
   loginUser = () => {
-    console.log("login");
     if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
       firebase

@@ -154,3 +154,23 @@ p {
   opacity: 0.01;
   transition: opacity 500ms ease-in;
 }
+
+.users__container {
+  overflow-y: auto;
+}
+
+.users__container .feed {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.users__container .feed:hover, .users__container .feed.is_active {
+  background: #654439;
+}
+
+.connection__label {
+  float: left !important;
+  margin-right: 12px !important;
+  margin-top: 5px;
+}

@@ -8,3 +8,4 @@
 - Remove Redux Promise (and maybe applyMiddleware)
 - Look for an improved transition in Messages component
 - Maybe use spinners when loading the Channels and Messages
+- Look at how Grider/McGinnis work with Redux
