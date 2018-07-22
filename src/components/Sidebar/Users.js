@@ -1,6 +1,7 @@
 import React from "react";
 import firebase from "../../index";
 import { connect } from "react-redux";
+import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
 class Users extends React.Component {
   state = {
@@ -42,7 +43,6 @@ class Users extends React.Component {
     });
 
     this.state.connectedRef.on("value", snap => {
-      console.log(snap.val());
       if (snap.val() === true) {
         let ref = this.state.presenceRef.child(this.props.currentUser.uid);
         ref.set(true);
@@ -69,7 +69,30 @@ class Users extends React.Component {
     this.setState({ users: updatedUsersArray });
   };
 
-  isOnline = user => user.status === "online";
+  isUserOnline = user => user.status === "online";
+
+  isChannelActive = user => {
+    const channelId = this.getChannelId(user.uid);
+    return this.props.currentChannel.id === channelId;
+  };
+
+  changeChannel = user => {
+    const channelId = this.getChannelId(user.uid);
+    const channel = {
+      id: channelId,
+      name: user.name
+    };
+
+    this.props.setCurrentChannel(channel);
+    this.props.setPrivateChannel(true);
+  };
+
+  getChannelId = userId => {
+    let currentUserId = this.props.currentUser.uid;
+    return userId < currentUserId
+      ? `${userId}/${currentUserId}`
+      : `${currentUserId}/${userId}`;
+  };
 
   detachListeners = () => {
     this.state.usersRef.off();
@@ -82,30 +105,40 @@ class Users extends React.Component {
       <div className="users__container">
         <h2 className="ui inverted center aligned header">Users</h2>
 
-        <div className="ui feed">
-          {this.state.users.map(user => (
-            <div key={user.uid} className="event">
+        {this.state.users.map(user => (
+          <div
+            className={`ui feed ${
+              this.isChannelActive(user) ? "is_active" : ""
+            }`}
+            onClick={() => this.changeChannel(user)}
+            key={user.uid}
+          >
+            <div className="event">
               <div className="label">
                 <img src={user.avatar} alt="User avatar" />
               </div>
               <div className="content">
                 <span
                   className={`ui empty circular label connection__label ${
-                    this.isOnline(user) ? "green" : "red"
+                    this.isUserOnline(user) ? "green" : "red"
                   }`}
                 />
                 {user.name}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  currentUser: state.user.currentUser
+  currentUser: state.user.currentUser,
+  currentChannel: state.user.currentChannel
 });
 
-export default connect(mapStateToProps)(Users);
+export default connect(
+  mapStateToProps,
+  { setCurrentChannel, setPrivateChannel }
+)(Users);

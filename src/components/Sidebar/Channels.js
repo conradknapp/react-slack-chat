@@ -3,7 +3,7 @@ import firebase from "../../index";
 import { connect } from "react-redux";
 import { Modal, Message } from "semantic-ui-react";
 
-import { setCurrentChannel } from "../../actions";
+import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
 class Channels extends React.Component {
   state = {
@@ -80,6 +80,7 @@ class Channels extends React.Component {
   handleClose = () => this.setState({ modalOpen: false });
 
   changeChannel = channel => {
+    this.props.setPrivateChannel(false);
     this.props.setCurrentChannel(channel);
   };
 
@@ -166,5 +167,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { setCurrentChannel }
+  { setCurrentChannel, setPrivateChannel }
 )(Channels);

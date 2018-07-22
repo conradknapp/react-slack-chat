@@ -9,3 +9,6 @@
 - Look for an improved transition in Messages component
 - Maybe use spinners when loading the Channels and Messages
 - Look at how Grider/McGinnis work with Redux
+- Add ability to send a message with shift/cmd - enter
+- Create arrow down button when you scroll past a certain point to return to top of thread
+- Maybe create notifications if you're scrolled down in the chat about new messages

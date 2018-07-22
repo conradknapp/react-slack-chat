@@ -26,9 +26,9 @@ class MessageForm extends React.Component {
   };
 
   sendMessage = () => {
-    const { currentChannel, messagesRef } = this.props;
+    const { currentChannel, getMessagesRef } = this.props;
     console.log("sending message...");
-    messagesRef
+    getMessagesRef()
       .child(currentChannel.id)
       .push()
       .set(this.createMessage())

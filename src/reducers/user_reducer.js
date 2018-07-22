@@ -3,7 +3,8 @@ import * as actionTypes from "../actions/types";
 const initialState = {
   currentUser: null,
   currentChannel: null,
-  isAuthenticated: false
+  isAuthenticated: false,
+  isPrivateChannel: false
 };
 
 export default (state = initialState, action) => {
@@ -20,6 +21,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         currentChannel: action.payload.currentChannel
+      };
+    case actionTypes.SET_PRIVATE_CHANNEL:
+      return {
+        ...state,
+        isPrivateChannel: action.payload.isPrivateChannel
       };
     default:
       return state;
