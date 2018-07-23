@@ -12,6 +12,7 @@ import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
+import "firebase/storage";
 import "semantic-ui-css/semantic.min.css";
 
 import root_reducer from "./reducers";

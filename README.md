@@ -236,3 +236,29 @@ Add Private Messages
   ".validate": "newData.val() === auth.uid"
   }
 - Get the channel name by creating a function 'getchannelName' in Messages component, depending on whether channel is private or not, prefix the channel name with @ or #
+
+Sending Images
+
+---
+
+- Place file model in MessageForm
+- Add click listener to cloud upload button 'openFileModal' (do like you did in the other modal)
+- Create FileModal component and pass down 'handleClose' and 'openModal' props to it
+- Write all the markup within the FileModal component and two new funcs, sendFile and addFile, and state object with a file property and authorized property
+- For now, just make a variable 'files' in addFile and log it to the console (to test out the modal)
+- Set the file property in state
+- Create isValid function, which takes a file
+- Install 'mime-types' package to check to see that a file is using the appropriate mime-types, within isValid, check to see that a file's mime type matches what we included within the 'authorized' array
+- In sendFile, check to see if the file property is null, if its mimetype is valid, and then send the metadata of that file using a function uploadFile from its parent component (MessageForm), then close the modal
+- In MessageForm, create uploadFile, log the file and metadata that are passed to it, pass it down to FileModal and test it out
+- In uploadFile, get the 'getMessageRefs' from parent component
+- Create getPath function in MessageForm, get isPrivateChannel from mapStateToProps
+- Use the result of getPath to create a new path within upload file, then download uuid
+- Go to storage folder in firebase and create a new folder 'chat'
+- Change the rules for storage so that not all reads and writes are allowed and it tells out database where to save these images hwen we upload them to a given chat
+- Create new property in MessageForm called uploadTask: null and uploadState:null and storageRef
+- Then use these three properties to create the logic to upload a file within uploadFile function
+- Add a progress bar in the markup (MessageForm) to show the progress of the upload
+- Create new component Progress Bar and within the uploadFile function, set the percentage of the file uploaded in state, pass it down to the progress bar component
+- Note! Make sure to import firebase/storage in index.js
+- Now try uploading a file to storage, should see a new file in storage
