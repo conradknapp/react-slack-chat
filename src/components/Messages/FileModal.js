@@ -22,6 +22,7 @@ class FileModal extends React.Component {
       if (this.isValid(file.name)) {
         const metadata = { contentType: mime.lookup(file.name) };
         this.props.uploadFile(file, metadata);
+        this.resetForm();
         this.props.handleClose();
       }
     }
@@ -29,6 +30,11 @@ class FileModal extends React.Component {
 
   isValid = filename => {
     return this.state.authorized.includes(mime.lookup(filename));
+  };
+
+  resetForm = () => {
+    this.setState({ file: null });
+    // reset form?
   };
 
   render() {

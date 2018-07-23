@@ -8,3 +8,4 @@ https://react.semantic-ui.com/modules/modal#types-controlled
 https://firebase.google.com/docs/auth/web/manage-users
 https://hackernoon.com/replacing-componentwillreceiveprops-with-getderivedstatefromprops-c3956f7ce607
 https://stackoverflow.com/questions/45222724/find-and-replace-value-inside-an-array-of-objects-javascript?noredirect=1
+https://stackoverflow.com/questions/43911080/return-the-download-url-of-a-file-uploaded-to-firebase#43916972

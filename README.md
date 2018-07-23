@@ -262,3 +262,16 @@ Sending Images
 - Create new component Progress Bar and within the uploadFile function, set the percentage of the file uploaded in state, pass it down to the progress bar component
 - Note! Make sure to import firebase/storage in index.js
 - Now try uploading a file to storage, should see a new file in storage
+- Git push
+- Push any errors that we get in sending the file to the errors property in state, make uploadState in state to 'error', make uploadTask null
+- In the last part of uploading the file, make uploadState = 'done', then go to FileModal and create function 'resetForm', then add it in uploadFile
+- Call a new function in the last part of uploadFile where you create a fileUrl, then call sendFileMessage(fileUrl, ref, pathToUpload), and make a new function sendFileMessage
+- Add Firebase logic to sendFileMessage function
+- As you create the logic for sendFileMessage, add a parameter of fileUrl to createMessage (fileUrl = null); depending on whether fileUrl is passed to it, you'll either set the content value on the message object to this.state.message or the fileUrl that was passed in (make sure to return the message at the end of the function if you are using an if-else statement to the set the content property)
+- If you get a warning message from firebase when you try to create a new message for your image, change the rules within 'messages' under '$messageId' to
+  ".validate": "(newData.hasChildren(['content', 'user', 'timestamp']) && !newData.hasChildren(['image'])) || (newData.hasChildren(['image', 'user', 'timestamp']) && !newData.hasChildren(['content']))"
+- Add componentWillUnmount lifecycle where the uploadTask property in state is cancelled
+- Add another two rules to the Storage Rules:
+- allow write: if request.auth != null && request.resource.contentType.matches('image/.\*') && request.resource.size < 1 \* 1024 \* 1024
+- Show that firebase will not accept files that are greater than 1mb; [note: make sure you are outputting your error message when there is an error in uploading]
+- Add in 'Message' component a 'isImage' function (and componentDidMount to run it on mount), where it will check to see if the content provided to it is an image or not and output the right element

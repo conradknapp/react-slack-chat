@@ -3,12 +3,26 @@ import moment from "moment";
 import { connect } from "react-redux";
 
 class Message extends React.Component {
+  state = {
+    image: false
+  };
+
+  componentDidMount() {
+    this.isImage(this.props.message);
+  }
+
+  isImage = message => {
+    const image = message.hasOwnProperty('image') && !message.hasOwnProperty('content');
+    this.setState({ image });
+  };
+
   isOwnMessage = user => user.id === this.props.currentUser.uid;
 
   fromNow = time => moment(time).fromNow();
 
   render() {
     const { message } = this.props;
+    const { image } = this.state;
 
     return (
       <div className="comment comment__container">
@@ -26,7 +40,15 @@ class Message extends React.Component {
               {this.fromNow(message.timestamp)}
             </span>
           </div>
-          <div className="text">{message.content}</div>
+          {image ? (
+            <img
+              className="ui image comment__image"
+              src={message.image}
+              alt={`Uploaded by user ${message.user.name}`}
+            />
+          ) : (
+            <div className="text">{message.content}</div>
+          )}
         </div>
       </div>
     );
