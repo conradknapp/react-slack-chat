@@ -2,7 +2,7 @@ import React from "react";
 import firebase from "../index";
 import md5 from "md5";
 //prettier-ignore
-import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Header, Message, Segment, Icon } from 'semantic-ui-react';
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { setUser } from "../actions";
@@ -20,36 +20,27 @@ class Register extends React.Component {
 
   isFormValid = () => {
     let errors = [];
+    let error;
 
-    if (this.isFormEmpty()) {
-      // prettier-ignore
-      errors = [{ message: "Fill in all fields", type: "formEmpty" }];
-      this.setState({ errors });
+    if (this.isFormEmpty(this.state)) {
+      error = { message: "Fill in all fields" };
+      this.setState({ errors: errors.concat(error) });
       return false;
-    } else if (!this.isPasswordValid()) {
-      // prettier-ignore
-      errors = [{ message: "Password is invalid", type: "passwordInvalid" }];
-      this.setState({ errors });
+    } else if (!this.isPasswordValid(this.state)) {
+      error = { message: "Password is invalid" };
+      this.setState({ errors: errors.concat(error) });
       return false;
     } else {
       return true;
     }
   };
 
-  isFormEmpty = () => {
-    const { username, email, password, passwordConfirmation } = this.state;
-
+  isFormEmpty = ({ username, email, password, passwordConfirmation }) => {
     // prettier-ignore
-    if (!username.length || !email.length || !password.length || !passwordConfirmation.length) {
-      return true;
-    } else {
-      return false;
-    }
+    return !username.length || !email.length || !password.length || !passwordConfirmation.length;
   };
 
-  isPasswordValid = () => {
-    const { password, passwordConfirmation } = this.state;
-
+  isPasswordValid = ({ password, passwordConfirmation }) => {
     if (password.length < 6 || passwordConfirmation.length < 6) {
       return false;
     } else if (password !== passwordConfirmation) {
@@ -60,8 +51,6 @@ class Register extends React.Component {
   };
 
   registerUser = event => {
-    console.log("registering...");
-
     event.preventDefault();
     if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
@@ -80,57 +69,45 @@ class Register extends React.Component {
             .then(
               () => {
                 this.saveUser(createdUser).then(() => {
-                  console.log(createdUser.user);
                   this.props.setUser(createdUser.user);
                   this.props.history.push("/");
                 });
               },
               err => {
                 console.error(err);
-                // prettier-ignore
                 this.setState({
-                  errors: this.state.errors.concat([{ message: err.message, type: err.name }]),
-                  loading: false
+                  loading: false,
+                  errors: [...this.state.errors, { message: err.message }]
                 });
               }
             );
         })
         .catch(err => {
           console.error(err);
-          // prettier-ignore
           this.setState({
-            errors: this.state.errors.concat([{ message: err.message, type: err.name }]),
-            loading: false
+            loading: false,
+            errors: [...this.state.errors, { message: err.message }]
           });
         });
     }
   };
 
   saveUser = createdUser => {
-    console.log(createdUser.user);
     return this.state.usersRef.child(createdUser.user.uid).set({
       name: createdUser.user.displayName,
       avatar: createdUser.user.photoURL
     });
   };
 
-  handleChange = event => {
-    let trimmedValue = event.target.value.trim();
-    this.setState({ [event.target.name]: trimmedValue });
-  };
+  handleChange = event =>
+    this.setState({ [event.target.name]: event.target.value.trim() });
 
-  displayErrors = () =>
-    this.state.errors.map((error, i) => <p key={i}>{error.message}</p>);
+  displayErrors = errors =>
+    errors.map((error, i) => <p key={i}>{error.message}</p>);
 
   render() {
-    const {
-      username,
-      email,
-      password,
-      passwordConfirmation,
-      errors,
-      loading
-    } = this.state;
+    // prettier-ignore
+    const { username, email, password, passwordConfirmation, errors, loading } = this.state;
 
     return (
       <div className="login-form">
@@ -140,7 +117,8 @@ class Register extends React.Component {
           verticalAlign="middle"
         >
           <Grid.Column style={{ maxWidth: 450 }}>
-            <Header as="h2" color="orange" textAlign="center">
+            <Header as="h2" icon color="orange" textAlign="center">
+              <Icon name="puzzle piece" color="orange" />
               Register
             </Header>
             <Form size="large" onSubmit={this.registerUser} className="error">
@@ -158,7 +136,7 @@ class Register extends React.Component {
                 <Form.Input
                   fluid
                   name="email"
-                  icon="user"
+                  icon="mail"
                   iconPosition="left"
                   placeholder="E-mail address"
                   onChange={this.handleChange}
@@ -166,7 +144,7 @@ class Register extends React.Component {
                   className={
                     errors.some(el => el.message.includes("email"))
                       ? "error"
-                      : null
+                      : ""
                   }
                   autoComplete="email"
                   required={true}
@@ -181,14 +159,16 @@ class Register extends React.Component {
                   onChange={this.handleChange}
                   value={password}
                   className={
-                    errors.some(el => el.includes("password")) ? "error" : null
+                    errors.some(el => el.message.includes("password"))
+                      ? "error"
+                      : ""
                   }
                   autoComplete="password"
                   required={true}
                 />
                 <Form.Input
                   fluid
-                  icon="lock"
+                  icon="repeat"
                   iconPosition="left"
                   placeholder="Password Confirmation"
                   type="password"
@@ -196,9 +176,9 @@ class Register extends React.Component {
                   onChange={this.handleChange}
                   value={passwordConfirmation}
                   className={
-                    errors.some(el => el.type === "passwordInvalid")
+                    errors.some(el => el.message.includes("password"))
                       ? "error"
-                      : null
+                      : ""
                   }
                   autoComplete="password"
                   required={true}
@@ -207,7 +187,7 @@ class Register extends React.Component {
                   color="orange"
                   fluid
                   size="large"
-                  className={loading ? "loading" : null}
+                  className={loading ? "loading" : ""}
                 >
                   Submit
                 </Button>
@@ -216,7 +196,7 @@ class Register extends React.Component {
             {!!errors.length && (
               <Message error>
                 <h3>Error</h3>
-                {this.displayErrors()}
+                {this.displayErrors(errors)}
               </Message>
             )}
             <Message>

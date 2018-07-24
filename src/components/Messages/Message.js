@@ -12,7 +12,8 @@ class Message extends React.Component {
   }
 
   isImage = message => {
-    const image = message.hasOwnProperty('image') && !message.hasOwnProperty('content');
+    const image =
+      message.hasOwnProperty("image") && !message.hasOwnProperty("content");
     this.setState({ image });
   };
 

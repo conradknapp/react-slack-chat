@@ -12,3 +12,4 @@
 - Add ability to send a message with shift/cmd - enter
 - Create arrow down button when you scroll past a certain point to return to top of thread
 - Maybe create notifications if you're scrolled down in the chat about new messages
+- Add error handling when adding a channel if it is more than a certain number of characters

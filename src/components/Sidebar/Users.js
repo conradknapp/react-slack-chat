@@ -1,5 +1,6 @@
 import React from "react";
 import firebase from "../../index";
+import { Header, Feed, Icon } from "semantic-ui-react";
 import { connect } from "react-redux";
 import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
@@ -25,8 +26,7 @@ class Users extends React.Component {
         let user = snap.val();
         user["uid"] = snap.key;
         user["status"] = "offline";
-        const users = [...this.state.users, user];
-        this.setState({ users });
+        this.setState({ users: [...this.state.users, user] });
       }
     });
 
@@ -44,11 +44,11 @@ class Users extends React.Component {
 
     this.state.connectedRef.on("value", snap => {
       if (snap.val() === true) {
-        let ref = this.state.presenceRef.child(this.props.currentUser.uid);
+        const ref = this.state.presenceRef.child(this.props.currentUser.uid);
         ref.set(true);
         ref.onDisconnect().remove(err => {
           if (err !== null) {
-            console.log(err);
+            console.error(err);
           }
         });
       }
@@ -58,11 +58,7 @@ class Users extends React.Component {
   addStatusToUser = (userId, connected = true) => {
     const updatedUsersArray = this.state.users.reduce((acc, user) => {
       if (user.uid === userId) {
-        if (connected) {
-          user["status"] = "online";
-        } else {
-          user["status"] = "offline";
-        }
+        user["status"] = `${connected ? "online" : "offline"}`;
       }
       return acc.concat(user);
     }, []);
@@ -72,23 +68,24 @@ class Users extends React.Component {
   isUserOnline = user => user.status === "online";
 
   isChannelActive = user => {
-    const channelId = this.getChannelId(user.uid);
-    return this.props.currentChannel.id === channelId;
+    if (this.props.currentChannel) {
+      const channelId = this.getChannelId(user.uid);
+      return this.props.currentChannel.id === channelId;
+    }
   };
 
   changeChannel = user => {
     const channelId = this.getChannelId(user.uid);
-    const channel = {
+    const channelData = {
       id: channelId,
       name: user.name
     };
-
-    this.props.setCurrentChannel(channel);
+    this.props.setCurrentChannel(channelData);
     this.props.setPrivateChannel(true);
   };
 
   getChannelId = userId => {
-    let currentUserId = this.props.currentUser.uid;
+    const currentUserId = this.props.currentUser.uid;
     return userId < currentUserId
       ? `${userId}/${currentUserId}`
       : `${currentUserId}/${userId}`;
@@ -101,32 +98,24 @@ class Users extends React.Component {
   };
 
   render() {
+    const { users } = this.state;
+
     return (
       <div className="users__container">
-        <h2 className="ui inverted center aligned header">Users</h2>
-
-        {this.state.users.map(user => (
-          <div
-            className={`ui feed ${
-              this.isChannelActive(user) ? "is_active" : ""
-            }`}
-            onClick={() => this.changeChannel(user)}
-            key={user.uid}
-          >
-            <div className="event">
-              <div className="label">
-                <img src={user.avatar} alt="User avatar" />
-              </div>
-              <div className="content">
-                <span
-                  className={`ui empty circular label connection__label ${
-                    this.isUserOnline(user) ? "green" : "red"
-                  }`}
+        <Header as="h2" content="Users" textAlign="center" inverted />
+        {users.map(user => (
+          <Feed key={user.uid}>
+            <Feed.Event>
+              <Feed.Label image={user.avatar} />
+              <Feed.Content onClick={() => this.changeChannel(user)}>
+                <Icon
+                  name="circle"
+                  color={this.isUserOnline(user) ? "green" : "red"}
                 />
                 {user.name}
-              </div>
-            </div>
-          </div>
+              </Feed.Content>
+            </Feed.Event>
+          </Feed>
         ))}
       </div>
     );

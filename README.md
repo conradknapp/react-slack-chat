@@ -275,3 +275,16 @@ Sending Images
 - allow write: if request.auth != null && request.resource.contentType.matches('image/.\*') && request.resource.size < 1 \* 1024 \* 1024
 - Show that firebase will not accept files that are greater than 1mb; [note: make sure you are outputting your error message when there is an error in uploading]
 - Add in 'Message' component a 'isImage' function (and componentDidMount to run it on mount), where it will check to see if the content provided to it is an image or not and output the right element
+
+Notifications
+
+---
+
+- Provide the '.validate' rule from 'messages' to '$messageId' in 'privateMessages' so that we can send pictures in private messages too (keep $uid1 < $uid2 && )
+- Add image validation to 'messages' and 'privateMessages' (".validate": "newData.val().length > 0")
+- Add additional rule to storage for 'privateMessages' - (request.auth.uid == user1 || request.auth.uid == user2) to both read and write
+- Conditionally show ProgressBar component (according to uploadState) (pass uploadState as a prop to ProgressBar); Note: if you want to render nothing, return 'null'
+- Disable the 'Attach' button if the 'uploadState' is 'uploading'
+- Add property in 'Channels' component--notificationCount
+- Within addListeners, call this.addCountListener(snap.key) and create addCountListener
+- Create new prop in state--messagesRef, use that within addCountListener; call new function this.handleNotifications(channelId, this.props.currentChannel.id, this.notificationCount, snap) and create it

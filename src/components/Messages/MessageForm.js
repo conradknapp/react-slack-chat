@@ -2,6 +2,8 @@ import React from "react";
 import firebase from "../../index";
 import uuidv4 from "uuid/v4";
 import { connect } from "react-redux";
+import { Button, Icon, TextArea, Form } from "semantic-ui-react";
+
 import FileModal from "./FileModal";
 import ProgressBar from "./ProgressBar";
 
@@ -23,9 +25,9 @@ class MessageForm extends React.Component {
     }
   }
 
-  openChannelModal = () => this.setState({ modalOpen: true });
+  openFileModal = () => this.setState({ modalOpen: true });
 
-  handleClose = () => this.setState({ modalOpen: false });
+  closeFileModal = () => this.setState({ modalOpen: false });
 
   handleChange = event =>
     this.setState({ [event.target.name]: event.target.value.trim() });
@@ -50,22 +52,19 @@ class MessageForm extends React.Component {
 
   sendMessage = () => {
     const { currentChannel, getMessagesRef } = this.props;
-    console.log("sending message...");
+
     getMessagesRef()
       .child(currentChannel.id)
       .push()
       .set(this.createMessage())
       .then(() => {
-        console.log("message sent!");
         this.setState({ message: "" });
-        this.refs.message.value = "";
+        this.refs.message.ref.value = "";
       })
       .catch(err => {
         console.error(err);
         this.setState({
-          errors: this.state.errors.concat([
-            { type: err.name, message: err.message }
-          ])
+          errors: [...this.state.errors, { message: err.message }]
         });
       });
   };
@@ -94,10 +93,7 @@ class MessageForm extends React.Component {
           err => {
             console.error(err);
             this.setState({
-              errors: [
-                ...this.state.errors,
-                { type: err.name, message: err.message }
-              ],
+              errors: [...this.state.errors, { message: err.message }],
               uploadState: "error",
               uploadTask: null
             });
@@ -106,16 +102,12 @@ class MessageForm extends React.Component {
             this.state.uploadTask.snapshot.ref
               .getDownloadURL()
               .then(downloadUrl => {
-                console.log(downloadUrl);
                 this.sendFileMessage(downloadUrl, ref, pathToUpload);
               })
               .catch(err => {
                 console.error(err);
                 this.setState({
-                  errors: [
-                    ...this.state.errors,
-                    { type: err.name, message: err.message }
-                  ],
+                  errors: [...this.state.errors, { message: err.message }],
                   uploadState: "error",
                   uploadTask: null
                 });
@@ -137,10 +129,7 @@ class MessageForm extends React.Component {
       .catch(err => {
         console.error(err);
         this.setState({
-          errors: [
-            ...this.state.errors,
-            { type: err.name, message: err.message }
-          ]
+          errors: [...this.state.errors, { message: err.message }]
         });
       });
   };
@@ -154,40 +143,39 @@ class MessageForm extends React.Component {
   };
 
   render() {
-    const { modalOpen, percentUploaded } = this.state;
+    const { modalOpen, percentUploaded, uploadState } = this.state;
 
     return (
       <div className="messages__form">
-        <div className="ui inverted form">
-          <div className="two fields">
-            <div className="field">
-              <textarea
-                ref="message"
-                name="message"
-                id="message"
-                rows="3"
-                placeholder="Write your message"
-                onChange={this.handleChange}
-              />
-            </div>
-
-            <div className="field">
-              <button className="ui green button" onClick={this.sendMessage}>
-                Send
-              </button>
-              <button
-                className="ui labeled icon button"
-                onClick={this.openChannelModal}
-              >
-                <i className="cloud upload icon" /> Attach
-              </button>
-            </div>
-          </div>
-        </div>
-        <ProgressBar percentUploaded={percentUploaded} />
+        <Form inverted>
+          <TextArea
+            ref="message"
+            name="message"
+            rows={3}
+            autoHeight
+            onChange={this.handleChange}
+            placeholder="Write your message"
+          />
+          <Button.Group icon>
+            <Button icon color="green" onClick={this.sendMessage}>
+              Send
+            </Button>
+            <Button
+              icon
+              onClick={this.openFileModal}
+              disabled={uploadState === "uploading"}
+            >
+              <Icon name="cloud upload" /> Attach
+            </Button>
+          </Button.Group>
+        </Form>
+        <ProgressBar
+          uploadState={uploadState}
+          percentUploaded={percentUploaded}
+        />
         <FileModal
           modalOpen={modalOpen}
-          handleClose={this.handleClose}
+          closeFileModal={this.closeFileModal}
           uploadFile={this.uploadFile}
         />
       </div>

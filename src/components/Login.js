@@ -1,7 +1,7 @@
 import React from "react";
 import firebase from "../index";
 //prettier-ignore
-import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Header, Message, Segment, Icon } from 'semantic-ui-react';
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { setUser } from "../actions";
@@ -18,6 +18,11 @@ class Login extends React.Component {
     firebase.auth().onAuthStateChanged(user => console.log(user));
   }
 
+  handleChange = event =>
+    this.setState({ [event.target.name]: event.target.value.trim() });
+
+  isFormValid = () => this.state.email && this.state.password;
+
   loginUser = () => {
     if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
@@ -31,26 +36,11 @@ class Login extends React.Component {
         .catch(err => {
           console.error(err);
           this.setState({
-            errors: this.state.errors.concat([
-              { message: err.message, type: err.name }
-            ]),
-            loading: false
+            loading: false,
+            errors: [...this.state.errors, { message: err.message }]
           });
         });
     }
-  };
-
-  isFormValid = () => {
-    if (this.state.email && this.state.password) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  handleChange = event => {
-    let trimmedValue = event.target.value.trim();
-    this.setState({ [event.target.name]: trimmedValue });
   };
 
   displayErrors = () =>
@@ -67,7 +57,8 @@ class Login extends React.Component {
           verticalAlign="middle"
         >
           <Grid.Column style={{ maxWidth: 450 }}>
-            <Header as="h2" color="orange" textAlign="center">
+            <Header as="h1" icon color="violet" textAlign="center">
+              <Icon name="code branch" color="violet" />
               Login
             </Header>
             <Form size="large" onSubmit={this.loginUser} className="error">
@@ -83,7 +74,7 @@ class Login extends React.Component {
                   className={
                     errors.some(el => el.message.includes("email"))
                       ? "error"
-                      : null
+                      : ""
                   }
                   autoComplete="email"
                   required={true}
@@ -100,16 +91,16 @@ class Login extends React.Component {
                   className={
                     errors.some(el => el.message.includes("password"))
                       ? "error"
-                      : null
+                      : ""
                   }
                   autoComplete="password"
                   required={true}
                 />
                 <Button
-                  color="orange"
+                  color="violet"
                   fluid
                   size="large"
-                  className={loading ? "loading" : null}
+                  className={loading ? "loading" : ""}
                 >
                   Submit
                 </Button>

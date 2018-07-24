@@ -1,7 +1,8 @@
 import React from "react";
 import firebase from "../../index";
 import { connect } from "react-redux";
-import { Modal, Message } from "semantic-ui-react";
+// prettier-ignore
+import { Header, Modal, Message, Button, Icon, Input } from "semantic-ui-react";
 
 import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
@@ -12,7 +13,9 @@ class Channels extends React.Component {
     errors: [],
     modalOpen: false,
     channelsRef: firebase.database().ref("channels"),
-    firstLoad: true
+    messagesRef: firebase.database().ref("messages"),
+    firstLoad: true,
+    notificationCount: []
   };
 
   componentDidMount() {
@@ -25,27 +28,53 @@ class Channels extends React.Component {
 
   addListeners = () => {
     this.state.channelsRef.on("child_added", snap => {
-      this.setState({
-        channels: this.state.channels.concat([
-          { id: snap.val().id, name: snap.val().name }
-        ])
-      });
-
-      if (this.state.firstLoad && this.state.channels.length > 0) {
+      this.addCountListener(snap.key);
+      this.setState({ channels: [...this.state.channels, snap.val()] });
+      if (this.state.firstLoad && !!this.state.channels.length) {
         this.props.setCurrentChannel(this.state.channels[0]);
-      } else {
-        this.setState({ firstLoad: false });
       }
+      this.setState({ firstLoad: false });
     });
   };
 
-  detachListeners = () => {
-    this.state.channelsRef.off();
+  addCountListener = channelId => {
+    console.log(channelId);
+    // this.state.messagesRef.child(channelId).on("value", snap => {
+    //   // prettier-ignore
+    //   console.log(snap);
+    //   this.handleNotifications(channelId, this.props.currentChannel.id, this.state.notificationCount, snap);
+    // });
   };
 
+  // prettier-ignore
+  // handleNotifications = (channelId, currentChannelId, notificationCount, snap) => {
+  //   let lastTotal = 0;
+  //   const index = notificationCount.findIndex(el => el.id === channelId) > -1;
+  //   if (index) {
+  //     if (channelId !== currentChannelId) {
+  //       lastTotal = notificationCount[index].total;
+  //       if (snap.numChildren - lastTotal > 0) {
+  //         notificationCount[index].notif = snap.numChildren() - lastTotal;
+  //       }
+  //     }
+  //   } else {
+  //     const newNotification = {
+  //       id: channelId,
+  //       total: snap.numChildren(),
+  //       lastKnownTotal: snap.numChildren(),
+  //       notif: 0
+  //     };
+  //     this.setState({
+  //       notificationCount: [...this.state.notificationCount, newNotification]
+  //     });
+  //   }
+  // };
+
+  detachListeners = () => this.state.channelsRef.off();
+
   addChannel = () => {
-    let key = this.state.channelsRef.push().key;
-    let newChannel = { id: key, name: this.state.newChannel };
+    const key = this.state.channelsRef.push().key;
+    const newChannel = { id: key, name: this.state.newChannel };
     this.state.channelsRef
       .child(key)
       .update(newChannel)
@@ -56,38 +85,30 @@ class Channels extends React.Component {
       .catch(err => {
         console.error(err);
         this.setState({
-          errors: this.state.errors.concat([
-            { type: err.name, message: err.message }
-          ])
+          errors: [...this.state.errors, { message: err.message }]
         });
       });
   };
 
-  setActiveChannel = channel => {
-    if (this.props.currentChannel) {
-      return channel.id === this.props.currentChannel.id;
-    }
-  };
+  setActiveChannel = channel =>
+    this.props.currentChannel && channel.id === this.props.currentChannel.id;
 
-  handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
-  };
+  handleChange = event =>
+    this.setState({ [event.target.name]: event.target.value.trim() });
 
-  openChannelModal = () => {
-    this.setState({ modalOpen: true });
-  };
+  openChannelModal = () => this.setState({ modalOpen: true });
 
-  handleClose = () => this.setState({ modalOpen: false });
+  closeChannelModal = () => this.setState({ modalOpen: false });
 
   changeChannel = channel => {
     this.props.setPrivateChannel(false);
     this.props.setCurrentChannel(channel);
   };
 
-  displayChannels = () =>
-    this.state.channels.map((channel, i) => (
+  displayChannels = channels =>
+    channels.map(channel => (
       <li
-        key={i}
+        key={channel.id}
         onClick={() => this.changeChannel(channel)}
         className={`channels__item ${
           this.setActiveChannel(channel) ? "is_active" : ""
@@ -97,64 +118,50 @@ class Channels extends React.Component {
       </li>
     ));
 
-  displayErrors = () =>
-    this.state.errors.map((error, i) => <p key={i}>{error.message}</p>);
+  displayErrors = errors =>
+    errors.map((error, i) => <p key={i}>{error.message}</p>);
 
   render() {
     const { modalOpen, errors, channels } = this.state;
 
     return (
       <div className="channels__container">
-        <h2 className="ui inverted center aligned header">
+        <Header as="h2" textAlign="center" inverted>
           Channels{" "}
-          <i
-            className="add square icon add_channel"
+          <Icon
+            name="plus square outline"
+            color="teal"
             onClick={this.openChannelModal}
           />
-        </h2>
+        </Header>
         <div className="ui raised padded segment channels__list">
-          <ul>{!!channels.length && this.displayChannels()}</ul>
+          <ul>{!!channels.length && this.displayChannels(channels)}</ul>
         </div>
 
-        <Modal
-          className="ui basic modal"
-          id="channelModal"
-          open={modalOpen}
-          onClose={this.handleClose}
-        >
-          <div className="ui icon header">Add a channel</div>
-
-          <div className="content">
-            <div className="ui inverted form">
-              <div className="field">
-                <label htmlFor="new_channel">Name of Channel</label>
-                <input
-                  type="text"
-                  name="newChannel"
-                  onChange={this.handleChange}
-                  id="new_channel"
-                />
-              </div>
-              {!!errors.length && (
-                <Message inverted color="red">
-                  <h3>Error</h3>
-                  {this.displayErrors()}
-                </Message>
-              )}
-            </div>
-          </div>
-
-          <div className="actions">
-            <div className="ui red basic cancel inverted button">
-              <i className="remove icon" onClick={this.handleClose} />Remove
-            </div>
-            <div
-              className="ui green cancel inverted button"
-              onClick={this.addChannel}
-            >
-              <i className="checkmark icon" />Add
-            </div>
-          </div>
+        <Modal basic open={modalOpen} onClose={this.closeChannelModal}>
+          <Modal.Header>Add a channel</Modal.Header>
+          <Modal.Content>
+            <Input
+              fluid
+              label="Name of Channel"
+              name="newChannel"
+              onChange={this.handleChange}
+            />
+            {!!errors.length && (
+              <Message inverted color="red">
+                <h3>Error</h3>
+                {this.displayErrors(errors)}
+              </Message>
+            )}
+          </Modal.Content>
+          <Modal.Actions>
+            <Button color="green" inverted onClick={this.addChannel}>
+              <Icon name="checkmark" /> Add
+            </Button>
+            <Button basic color="red" inverted onClick={this.closeChannelModal}>
+              <Icon name="remove" /> Cancel
+            </Button>
+          </Modal.Actions>
         </Modal>
       </div>
     );

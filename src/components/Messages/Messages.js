@@ -1,9 +1,10 @@
 import React from "react";
 import firebase from "../../index";
-import MessageForm from "./MessageForm";
 import { connect } from "react-redux";
+import { Message as Mess, Icon, Header, Segment } from "semantic-ui-react";
+
+import MessageForm from "./MessageForm";
 import Message from "./Message";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 class Messages extends React.Component {
   state = {
@@ -11,20 +12,48 @@ class Messages extends React.Component {
     privateMessagesRef: firebase.database().ref("privateMessages"),
     messages: [],
     listeners: [],
-    channel: null
+    channel: null,
+    loading: false
   };
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.state.current && nextProps.currentChannel.id) {
-      this.detachListeners();
-      this.setState({ messages: [], channel: nextProps.currentChannel });
-      this.addListeners(nextProps.currentChannel.id);
+  static getDerivedStateFromProps(props, state) {
+    // prettier-ignore
+    if (state.channel === null || props.currentChannel.id !== state.channel.id) {
+      return {
+        messages: [],
+        channel: props.currentChannel
+      };
+    }
+     else {
+      return null;
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { channel, listeners } = this.state;
+    // prettier-ignore
+    if ((channel.id && !prevState.channel) || (channel.id !== prevState.channel.id)) {
+      this.detachListeners(listeners);
+      this.addListeners(channel.id);
     }
   }
 
   componentWillUnmount() {
-    this.detachListeners();
+    this.detachListeners(this.state.listeners);
   }
+
+  addListeners = channelId => {
+    this.setState({ loading: true });
+    const ref = this.getMessagesRef();
+    ref.child(channelId).on("child_added", snap => {
+      this.setState({
+        messages: [snap.val(), ...this.state.messages],
+        loading: false
+      });
+    });
+
+    this.addToListeners(channelId, ref, "child_added");
+  };
 
   addToListeners = (id, ref, event) => {
     const listenerFound =
@@ -34,23 +63,13 @@ class Messages extends React.Component {
         );
       }) > -1;
     if (!listenerFound) {
-      let newListener = { id, ref, event };
+      const newListener = { id, ref, event };
       this.setState({ listeners: [...this.state.listeners, newListener] });
     }
   };
 
-  addListeners = channelId => {
-    let ref = this.getMessagesRef();
-    ref.child(channelId).on("child_added", snap => {
-      let newMessages = [snap.val(), ...this.state.messages];
-      this.setState({ messages: newMessages });
-    });
-
-    this.addToListeners(channelId, ref, "child_added");
-  };
-
-  detachListeners = () => {
-    this.state.listeners.forEach(listener => {
+  detachListeners = listeners => {
+    listeners.forEach(listener => {
       listener.ref.child(listener.id).off(listener.event);
       console.log("off..");
     });
@@ -61,52 +80,44 @@ class Messages extends React.Component {
   };
 
   getMessagesRef = () => {
-    if (this.props.isPrivateChannel) {
-      return this.state.privateMessagesRef;
-    } else {
-      return this.state.messagesRef;
-    }
+    const { messagesRef, privateMessagesRef } = this.state;
+    return this.props.isPrivateChannel ? privateMessagesRef : messagesRef;
   };
 
-  getChannelName = () => {
-    if (this.props.currentChannel) {
-      const { currentChannel, isPrivateChannel } = this.props;
-      return `${isPrivateChannel ? "@" : "#"}${currentChannel.name}`;
-    }
-  };
+  getChannelName = channel =>
+    `${this.props.isPrivateChannel ? "@" : "#"}${channel.name}`;
 
-  displayMessages = () => {
+  displayMessages = messages => {
     return (
-      <TransitionGroup>
-        {this.state.messages.map(message => (
-          <CSSTransition
-            key={message.timestamp}
-            timeout={500}
-            classNames="fade"
-          >
-            <Message key={message.timestamp} message={message} />
-          </CSSTransition>
+      <div>
+        {messages.map(message => (
+          <Message key={message.timestamp} message={message} />
         ))}
-      </TransitionGroup>
+      </div>
     );
   };
 
+  ifNoMessages = () => (
+    <Mess warning>
+      <Mess.Header>No Messages Currently</Mess.Header>
+      <Icon name="frown" />
+      <p>Be the first to add one!</p>
+    </Mess>
+  );
+
   render() {
-    const { messages } = this.state;
+    const { channel, messages, loading } = this.state;
 
     return (
       <div className="messages__container">
-        <div className="messages__content">
-          <h2 className="ui inverted center aligned header">
-            {this.getChannelName()}
-            <div className="ui segment">
-              <div className="ui comments">
-                {!!messages.length && this.displayMessages()}
-              </div>
-            </div>
-          </h2>
-        </div>
-
+        <Header as="h2" inverted textAlign="center">
+          {channel && this.getChannelName(channel)}
+        </Header>
+        <Segment loading={loading}>
+          <div className="ui comments">
+            {messages.length > 0 && this.displayMessages(messages)}
+          </div>
+        </Segment>
         <MessageForm getMessagesRef={this.getMessagesRef} />
       </div>
     );

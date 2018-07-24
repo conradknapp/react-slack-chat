@@ -2,6 +2,7 @@ import React from "react";
 import firebase from "../../index";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import { Header, Button, Icon } from "semantic-ui-react";
 
 import { logoutUser } from "../../actions";
 
@@ -25,28 +26,19 @@ class CurrentUser extends React.Component {
 
     return (
       <div className="currentUser__container">
-        <div className="ui items">
-          <div className="item">
-            <div className="ui mini image">
-              <img src={currentUser.photoURL} alt="User avatar" />
-            </div>
-            <div className="middle aligned content">
-              <div className="ui container">
-                <div className="ui inverted header">
-                  {currentUser.displayName}
-                </div>
-              </div>
-            </div>
-            <div className="extra">
-              <button
-                className="ui circular icon right floated button"
-                onClick={this.logoutUser}
-              >
-                <i className="icon sign out">.</i>
-              </button>
-            </div>
-          </div>
-        </div>
+        <Header
+          floated="left"
+          inverted
+          as="h2"
+          image={currentUser.photoURL}
+          content={currentUser.displayName}
+        />
+        <Button floated="right" circular animated onClick={this.logoutUser}>
+          <Button.Content visible>
+            <Icon name="sign out" />
+          </Button.Content>
+          <Button.Content hidden>Logout</Button.Content>
+        </Button>
       </div>
     );
   }

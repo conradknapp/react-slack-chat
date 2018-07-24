@@ -1,21 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { createStore, applyMiddleware } from "redux";
-import { Provider, connect } from "react-redux";
-import ReduxPromise from "redux-promise";
-import { composeWithDevTools } from "redux-devtools-extension";
-
-import App from "./App";
-import Login from "./components/Login";
-import Register from "./components/Register";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+
+import { createStore } from "redux";
+import { Provider, connect } from "react-redux";
+import { composeWithDevTools } from "redux-devtools-extension";
+import root_reducer from "./reducers";
+
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
 import "firebase/storage";
-import "semantic-ui-css/semantic.min.css";
 
-import root_reducer from "./reducers";
+import App from "./App";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import "semantic-ui-css/semantic.min.css";
 
 let config = {
   apiKey: "AIzaSyD4S9Zy7fVxMZx-R9UT0_rvikQi-ogF0NA",
@@ -28,10 +28,7 @@ let config = {
 firebase.initializeApp(config);
 export default firebase;
 
-const store = createStore(
-  root_reducer,
-  composeWithDevTools(applyMiddleware(ReduxPromise))
-);
+const store = createStore(root_reducer, composeWithDevTools());
 
 const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
   <Route

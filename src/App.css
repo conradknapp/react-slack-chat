@@ -1,11 +1,8 @@
-body {
-  background: #eee;
-}
-
 body > div,
 body > div > div,
 body > div > div > div.login-form {
   height: 100%;
+  background: #eee;
 }
 
 .chat__container {
@@ -165,7 +162,8 @@ p {
   border-radius: 4px;
 }
 
-.users__container .feed:hover, .users__container .feed.is_active {
+.users__container .feed:hover,
+.users__container .feed.is_active {
   background: #654439;
 }
 
