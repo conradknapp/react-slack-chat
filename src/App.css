@@ -1,12 +1,9 @@
 body > div,
 body > div > div,
-body > div > div > div.login-form {
+body > div > div > div.login-form,
+html {
   height: 100%;
   background: #eee;
-}
-
-.chat__container {
-  height: 100%;
 }
 
 .sidebar {
@@ -39,29 +36,7 @@ body > div > div > div.login-form {
   overflow-y: auto !important;
 }
 
-.channels__container ul {
-  margin: 0;
-  padding: 0px;
-}
-
-.channels__item {
-  height: 30px;
-  margin: 8px;
-  list-style: none;
-  background-color: #ca67ff;
-  cursor: pointer;
-  line-height: 30px;
-  border-radius: 2px;
-  padding-left: 12px;
-  font-weight: bold;
-  font-size: 1.1em;
-}
-
-.channel__count {
-  float: right;
-}
-
-.is_active {
+.active {
   background-color: #9740c5;
 }
 
@@ -69,52 +44,9 @@ body > div > div > div.login-form {
   background-color: #9740c5;
 }
 
-.add_channel {
-  cursor: pointer;
-  color: #8bc34a;
-}
-
-.add_chanel:hpver {
-  color: #689f38;
-}
-
-.messages__container {
-  position: relative;
-  background-color: #2a2a2e;
-  padding: 10px 30px 210px 30px;
-  margin-left: 300px;
-  min-height: 100%;
-}
-
-.messages__container .comments {
-  font-size: 1.2rem;
-}
-
-#app {
-  height: 100vh;
-}
-
 .messages__form {
-  position: fixed;
-  bottom: 0;
-  background-color: #232323;
-  padding: 10px;
-  padding-top: 20px;
-  height: 210px;
-  left: 300px;
-  right: 0;
-}
-
-.messages__form.big {
-  height: 350px;
-}
-
-.shortcut {
-  color: white;
-}
-
-p {
-  color: black;
+  margin: 0 auto;
+  background: black;
 }
 
 .comment__container pre {
@@ -128,47 +60,11 @@ p {
   padding-left: 8px;
 }
 
-.comment__image {
-  min-height: 100px;
-  margin-top: 16px;
-}
-
 .comment__date {
   color: #767676;
-}
-
-.fade-enter {
-  opacity: 0.01;
-}
-.fade-enter-active {
-  opacity: 1;
-  transition: opacity 500ms ease-in;
-}
-.fade-exit {
-  opacity: 1;
-}
-.fade-exit-active {
-  opacity: 0.01;
-  transition: opacity 500ms ease-in;
-}
-
-.users__container {
-  overflow-y: auto;
-}
-
-.users__container .feed {
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
 }
 
 .users__container .feed:hover,
 .users__container .feed.is_active {
   background: #654439;
-}
-
-.connection__label {
-  float: left !important;
-  margin-right: 12px !important;
-  margin-top: 5px;
 }

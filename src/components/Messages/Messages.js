@@ -1,7 +1,8 @@
 import React from "react";
 import firebase from "../../index";
 import { connect } from "react-redux";
-import { Message as Mess, Icon, Header, Segment } from "semantic-ui-react";
+// prettier-ignore
+import { Message as Mess, Icon, Header, Segment, Comment, Container, Transition, List } from "semantic-ui-react";
 
 import MessageForm from "./MessageForm";
 import Message from "./Message";
@@ -71,7 +72,6 @@ class Messages extends React.Component {
   detachListeners = listeners => {
     listeners.forEach(listener => {
       listener.ref.child(listener.id).off(listener.event);
-      console.log("off..");
     });
 
     // if (this.state.channel !== null) {
@@ -87,15 +87,18 @@ class Messages extends React.Component {
   getChannelName = channel =>
     `${this.props.isPrivateChannel ? "@" : "#"}${channel.name}`;
 
-  displayMessages = messages => {
-    return (
-      <div>
-        {messages.map(message => (
-          <Message key={message.timestamp} message={message} />
-        ))}
-      </div>
-    );
-  };
+  displayMessages = messages => (
+    <Transition.Group
+      as={List}
+      duration={1200}
+      divided
+      verticalAlign="middle"
+    >
+      {messages.map(message => (
+        <Message key={message.timestamp} message={message} />
+      ))}
+    </Transition.Group>
+  );
 
   ifNoMessages = () => (
     <Mess warning>
@@ -109,24 +112,25 @@ class Messages extends React.Component {
     const { channel, messages, loading } = this.state;
 
     return (
-      <div className="messages__container">
-        <Header as="h2" inverted textAlign="center">
+      <Container>
+        <Header as="h2" textAlign="center">
           {channel && this.getChannelName(channel)}
         </Header>
         <Segment loading={loading}>
-          <div className="ui comments">
+          {messages.length === 0 && this.ifNoMessages()}
+          <Comment.Group>
             {messages.length > 0 && this.displayMessages(messages)}
-          </div>
+            <MessageForm getMessagesRef={this.getMessagesRef} />
+          </Comment.Group>
         </Segment>
-        <MessageForm getMessagesRef={this.getMessagesRef} />
-      </div>
+      </Container>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  currentChannel: state.user.currentChannel,
-  isPrivateChannel: state.user.isPrivateChannel
+  currentChannel: state.channel.currentChannel,
+  isPrivateChannel: state.channel.isPrivateChannel
 });
 
 export default connect(mapStateToProps)(Messages);

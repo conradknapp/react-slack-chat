@@ -1,6 +1,6 @@
 import React from "react";
 import firebase from "../../index";
-import { Header, Feed, Icon } from "semantic-ui-react";
+import { Segment, Header, Feed, Icon } from "semantic-ui-react";
 import { connect } from "react-redux";
 import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
@@ -101,8 +101,8 @@ class Users extends React.Component {
     const { users } = this.state;
 
     return (
-      <div className="users__container">
-        <Header as="h2" content="Users" textAlign="center" inverted />
+      <Segment>
+        <Header as="h2" content="Users" textAlign="center" />
         {users.map(user => (
           <Feed key={user.uid}>
             <Feed.Event>
@@ -117,14 +117,14 @@ class Users extends React.Component {
             </Feed.Event>
           </Feed>
         ))}
-      </div>
+      </Segment>
     );
   }
 }
 
 const mapStateToProps = state => ({
   currentUser: state.user.currentUser,
-  currentChannel: state.user.currentChannel
+  currentChannel: state.channel.currentChannel
 });
 
 export default connect(

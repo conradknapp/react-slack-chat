@@ -2,7 +2,7 @@ import React from "react";
 import firebase from "../../index";
 import { connect } from "react-redux";
 // prettier-ignore
-import { Header, Modal, Message, Button, Icon, Input } from "semantic-ui-react";
+import { Header, Modal, Message, Button, Icon, Input, Container, Menu } from "semantic-ui-react";
 
 import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
@@ -107,15 +107,14 @@ class Channels extends React.Component {
 
   displayChannels = channels =>
     channels.map(channel => (
-      <li
+      <Menu.Item
         key={channel.id}
         onClick={() => this.changeChannel(channel)}
-        className={`channels__item ${
-          this.setActiveChannel(channel) ? "is_active" : ""
-        }`}
+        name={channel.name}
+        //className={this.setActiveChannel(channel) ? "active" : ""}
       >
         {channel.name}
-      </li>
+      </Menu.Item>
     ));
 
   displayErrors = errors =>
@@ -125,19 +124,18 @@ class Channels extends React.Component {
     const { modalOpen, errors, channels } = this.state;
 
     return (
-      <div className="channels__container">
+      <Container>
         <Header as="h2" textAlign="center" inverted>
-          Channels{" "}
+          Channels
           <Icon
             name="plus square outline"
             color="teal"
             onClick={this.openChannelModal}
           />
         </Header>
-        <div className="ui raised padded segment channels__list">
-          <ul>{!!channels.length && this.displayChannels(channels)}</ul>
-        </div>
-
+        <Menu vertical secondary>
+          {channels.length > 0 && this.displayChannels(channels)}
+        </Menu>
         <Modal basic open={modalOpen} onClose={this.closeChannelModal}>
           <Modal.Header>Add a channel</Modal.Header>
           <Modal.Content>
@@ -147,7 +145,7 @@ class Channels extends React.Component {
               name="newChannel"
               onChange={this.handleChange}
             />
-            {!!errors.length && (
+            {errors.length > 0 && (
               <Message inverted color="red">
                 <h3>Error</h3>
                 {this.displayErrors(errors)}
@@ -163,13 +161,13 @@ class Channels extends React.Component {
             </Button>
           </Modal.Actions>
         </Modal>
-      </div>
+      </Container>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  currentChannel: state.user.currentChannel
+  currentChannel: state.channel.currentChannel
 });
 
 export default connect(

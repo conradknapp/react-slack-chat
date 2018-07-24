@@ -2,7 +2,7 @@ import React from "react";
 import firebase from "../../index";
 import uuidv4 from "uuid/v4";
 import { connect } from "react-redux";
-import { Button, Icon, TextArea, Form } from "semantic-ui-react";
+import { Segment, Button, Icon, Form, TextArea } from "semantic-ui-react";
 
 import FileModal from "./FileModal";
 import ProgressBar from "./ProgressBar";
@@ -33,13 +33,12 @@ class MessageForm extends React.Component {
     this.setState({ [event.target.name]: event.target.value.trim() });
 
   createMessage = (fileUrl = null) => {
-    const { currentUser } = this.props;
     let message = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       user: {
-        name: currentUser.displayName,
-        avatar: currentUser.photoURL,
-        id: currentUser.uid
+        name: this.props.currentUser.displayName,
+        avatar: this.props.currentUser.photoURL,
+        id: this.props.currentUser.uid
       }
     };
     if (fileUrl !== null) {
@@ -146,7 +145,7 @@ class MessageForm extends React.Component {
     const { modalOpen, percentUploaded, uploadState } = this.state;
 
     return (
-      <div className="messages__form">
+      <Segment>
         <Form inverted>
           <TextArea
             ref="message"
@@ -157,15 +156,19 @@ class MessageForm extends React.Component {
             placeholder="Write your message"
           />
           <Button.Group icon>
-            <Button icon color="green" onClick={this.sendMessage}>
-              Send
-            </Button>
+            <Button
+              primary
+              content="Add Reply"
+              labelPosition="left"
+              icon="edit"
+              onClick={this.sendMessage}
+            />
             <Button
               icon
-              onClick={this.openFileModal}
               disabled={uploadState === "uploading"}
+              onClick={this.openFileModal}
             >
-              <Icon name="cloud upload" /> Attach
+              <Icon name="cloud upload" /> Upload Media
             </Button>
           </Button.Group>
         </Form>
@@ -178,15 +181,15 @@ class MessageForm extends React.Component {
           closeFileModal={this.closeFileModal}
           uploadFile={this.uploadFile}
         />
-      </div>
+      </Segment>
     );
   }
 }
 
 const mapStateToProps = state => ({
   currentUser: state.user.currentUser,
-  currentChannel: state.user.currentChannel,
-  isPrivateChannel: state.user.isPrivateChannel
+  currentChannel: state.channel.currentChannel,
+  isPrivateChannel: state.channel.isPrivateChannel
 });
 
 export default connect(mapStateToProps)(MessageForm);

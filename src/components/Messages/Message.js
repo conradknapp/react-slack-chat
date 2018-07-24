@@ -1,6 +1,7 @@
 import React from "react";
 import moment from "moment";
 import { connect } from "react-redux";
+import { Comment, Image } from "semantic-ui-react";
 
 class Message extends React.Component {
   state = {
@@ -26,32 +27,18 @@ class Message extends React.Component {
     const { image } = this.state;
 
     return (
-      <div className="comment comment__container">
-        <a className="avatar">
-          <img src={message.user.avatar} alt="User avatar" />
-        </a>
-        <div
-          className={`content ${
-            this.isOwnMessage(message.user) ? "comment__self" : ""
-          }`}
-        >
-          <a className="author">{message.user.name}</a>
-          <div className="metadata">
-            <span className="date comment__date">
-              {this.fromNow(message.timestamp)}
-            </span>
-          </div>
+      <Comment>
+        <Comment.Avatar src={message.user.avatar} />
+        <Comment.Content>
+          <Comment.Author as="a">{message.user.name}</Comment.Author>
+          <Comment.Metadata>{this.fromNow(message.timestamp)}</Comment.Metadata>
           {image ? (
-            <img
-              className="ui image comment__image"
-              src={message.image}
-              alt={`Uploaded by user ${message.user.name}`}
-            />
+            <Image src={message.image} />
           ) : (
-            <div className="text">{message.content}</div>
+            <Comment.Text>{message.content}</Comment.Text>
           )}
-        </div>
-      </div>
+        </Comment.Content>
+      </Comment>
     );
   }
 }
