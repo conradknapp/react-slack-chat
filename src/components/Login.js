@@ -14,10 +14,6 @@ class Login extends React.Component {
     loading: false
   };
 
-  componentDidMount() {
-    firebase.auth().onAuthStateChanged(user => console.log(user));
-  }
-
   handleChange = event =>
     this.setState({ [event.target.name]: event.target.value.trim() });
 

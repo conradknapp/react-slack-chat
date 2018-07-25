@@ -2,7 +2,8 @@ import React from "react";
 import firebase from "../../index";
 import { connect } from "react-redux";
 // prettier-ignore
-import { Message as Mess, Icon, Header, Segment, Comment, Container, Transition, List } from "semantic-ui-react";
+import { Header, Segment, Comment, Button, Grid } from "semantic-ui-react";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import MessageForm from "./MessageForm";
 import Message from "./Message";
@@ -52,7 +53,6 @@ class Messages extends React.Component {
         loading: false
       });
     });
-
     this.addToListeners(channelId, ref, "child_added");
   };
 
@@ -88,42 +88,47 @@ class Messages extends React.Component {
     `${this.props.isPrivateChannel ? "@" : "#"}${channel.name}`;
 
   displayMessages = messages => (
-    <Transition.Group
-      as={List}
-      duration={1200}
-      divided
-      verticalAlign="middle"
-    >
+    <TransitionGroup>
       {messages.map(message => (
-        <Message key={message.timestamp} message={message} />
+        <CSSTransition key={message.timestamp} timeout={500} classNames="fade">
+          <Message key={message.timestamp} message={message} />
+        </CSSTransition>
       ))}
-    </Transition.Group>
+    </TransitionGroup>
   );
 
-  ifNoMessages = () => (
-    <Mess warning>
-      <Mess.Header>No Messages Currently</Mess.Header>
-      <Icon name="frown" />
-      <p>Be the first to add one!</p>
-    </Mess>
-  );
+  // ifNoMessages = () => (
+  //   <Mess warning>
+  //     <Mess.Header>No Messages Currently</Mess.Header>
+  //     <Icon name="frown" />
+  //     <p>Be the first to add one!</p>
+  //   </Mess>
+  // );
 
   render() {
     const { channel, messages, loading } = this.state;
 
     return (
-      <Container>
-        <Header as="h2" textAlign="center">
-          {channel && this.getChannelName(channel)}
-        </Header>
+      <div className="messages__container">
+        <Grid columns={2}>
+          <Grid.Column>
+            <Button content="toggle aside" onClick={this.props.toggleAside} />
+          </Grid.Column>
+          <Grid.Column>
+            <Header
+              as="h2"
+              textAlign="center"
+              content={channel && this.getChannelName(channel)}
+            />
+          </Grid.Column>
+        </Grid>
         <Segment loading={loading}>
-          {messages.length === 0 && this.ifNoMessages()}
           <Comment.Group>
             {messages.length > 0 && this.displayMessages(messages)}
-            <MessageForm getMessagesRef={this.getMessagesRef} />
           </Comment.Group>
         </Segment>
-      </Container>
+        <MessageForm getMessagesRef={this.getMessagesRef} />
+      </div>
     );
   }
 }

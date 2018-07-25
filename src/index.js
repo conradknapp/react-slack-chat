@@ -6,6 +6,9 @@ import { createStore } from "redux";
 import { Provider, connect } from "react-redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import root_reducer from "./reducers";
+import { setUser } from "./actions";
+import { Dimmer, Loader, Transition } from "semantic-ui-react";
+// import { CSSTransition } from "react-transition-group";
 
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -30,6 +33,41 @@ export default firebase;
 
 const store = createStore(root_reducer, composeWithDevTools());
 
+class WithAuthorization extends React.Component {
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.props.setUser(user);
+      } else {
+        this.props.setUser(null, false);
+      }
+    });
+  }
+
+  render() {
+    const { isAuthenticated, isLoading } = this.props;
+    return !isLoading ? (
+      <React.Fragment>{this.props.render({ isAuthenticated })}</React.Fragment>
+    ) : (
+      <Transition.Group animation="scale" duration={500}>
+        <Dimmer active>
+          <Loader size="big" />
+        </Dimmer>
+      </Transition.Group>
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  isAuthenticated: state.user.isAuthenticated,
+  isLoading: state.user.isLoading
+});
+
+WithAuthorization = connect(
+  mapStateToProps,
+  { setUser }
+)(WithAuthorization);
+
 const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
   <Route
     {...rest}
@@ -48,26 +86,24 @@ const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
   />
 );
 
-let Root = props => (
-  <Router>
-    <React.Fragment>
-      <PrivateRoute
-        exact
-        path="/"
-        component={App}
-        isAuthenticated={props.isAuthenticated}
-      />
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
-    </React.Fragment>
-  </Router>
+const Root = () => (
+  <WithAuthorization
+    render={({ isAuthenticated }) => (
+      <Router>
+        <React.Fragment>
+          <PrivateRoute
+            exact
+            path="/"
+            component={App}
+            isAuthenticated={isAuthenticated}
+          />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+        </React.Fragment>
+      </Router>
+    )}
+  />
 );
-
-const mapStateToProps = state => ({
-  isAuthenticated: state.user.isAuthenticated
-});
-
-Root = connect(mapStateToProps)(Root);
 
 ReactDOM.render(
   <Provider store={store}>

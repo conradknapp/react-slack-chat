@@ -2,7 +2,7 @@ import React from "react";
 import firebase from "../../index";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { Header, Button, Icon } from "semantic-ui-react";
+import { Header, Button, Icon, Container } from "semantic-ui-react";
 
 import { logoutUser } from "../../actions";
 
@@ -25,7 +25,7 @@ class CurrentUser extends React.Component {
     const { currentUser } = this.props;
 
     return (
-      <div className="currentUser__container">
+      <Container>
         <Header
           floated="left"
           inverted
@@ -39,7 +39,7 @@ class CurrentUser extends React.Component {
           </Button.Content>
           <Button.Content hidden>Logout</Button.Content>
         </Button>
-      </div>
+      </Container>
     );
   }
 }

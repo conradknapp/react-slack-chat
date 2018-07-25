@@ -145,7 +145,7 @@ class MessageForm extends React.Component {
     const { modalOpen, percentUploaded, uploadState } = this.state;
 
     return (
-      <Segment>
+      <Segment className="messages__form">
         <Form inverted>
           <TextArea
             ref="message"

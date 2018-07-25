@@ -2,7 +2,7 @@ import React from "react";
 import firebase from "../../index";
 import { connect } from "react-redux";
 // prettier-ignore
-import { Header, Modal, Message, Button, Icon, Input, Container, Menu } from "semantic-ui-react";
+import { Header, Modal, Message, Button, Icon, Input, Container, Menu, Label } from "semantic-ui-react";
 
 import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
@@ -80,7 +80,7 @@ class Channels extends React.Component {
       .update(newChannel)
       .then(() => {
         this.setState({ newChannel: "" });
-        this.handleClose();
+        this.closeChannelModal();
       })
       .catch(err => {
         console.error(err);
@@ -114,6 +114,7 @@ class Channels extends React.Component {
         //className={this.setActiveChannel(channel) ? "active" : ""}
       >
         {channel.name}
+        <Label color="teal">1</Label>
       </Menu.Item>
     ));
 
@@ -133,7 +134,7 @@ class Channels extends React.Component {
             onClick={this.openChannelModal}
           />
         </Header>
-        <Menu vertical secondary>
+        <Menu className="channels__list" vertical secondary>
           {channels.length > 0 && this.displayChannels(channels)}
         </Menu>
         <Modal basic open={modalOpen} onClose={this.closeChannelModal}>

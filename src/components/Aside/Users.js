@@ -101,7 +101,7 @@ class Users extends React.Component {
     const { users } = this.state;
 
     return (
-      <Segment>
+      <Segment inverted>
         <Header as="h2" content="Users" textAlign="center" />
         {users.map(user => (
           <Feed key={user.uid}>
